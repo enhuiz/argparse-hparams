@@ -43,3 +43,16 @@ if __name__ == "__main__":
     test = HParamsTest()
     test.show()
 ```
+
+Outputs:
+
+```
+┌────────────┐
+│ Arguments  │
+├────────────┤
+│x: 0        │
+│y: BAD      │
+│pair: (2, 3)│
+│ok: False   │
+└────────────┘
+```
