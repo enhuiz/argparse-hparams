@@ -1,6 +1,6 @@
 # Argparse HParams
 
-> A simple argparser for HParams.
+> A simple argument parser for hyper-parameters.
 
 ## Installation
 
@@ -44,9 +44,9 @@ if __name__ == "__main__":
     test.show()
 ```
 
-Outputs:
 
 ```
+$ python example.py
 ┌────────────┐
 │ Arguments  │
 ├────────────┤
@@ -55,4 +55,25 @@ Outputs:
 │pair: (2, 3)│
 │ok: False   │
 └────────────┘
+
+$ python example.py --default default.yml 
+┌────────────┐
+│ Arguments  │
+├────────────┤
+│x: 0        │
+│y: 1        │
+│pair: [4, 5]│
+│ok: False   │
+└────────────┘
+
+$ python example.py --help
+usage: example.py [-h] [--x int] [--y upper] [--pair int int] [--ok] [--default Path]
+
+optional arguments:
+  -h, --help      show this help message and exit
+  --x int         x (default: 0)
+  --y upper       y (default: bad)
+  --pair int int  pair (default: (2, 3))
+  --ok            ok (default: False)
+  --default Path  A YAML configuration file that overrides the defaults (default: None)
 ```
