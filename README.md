@@ -21,7 +21,6 @@ pip install git+https://github.com/enhuiz/argparse-hparams.git
 ```python
 from argparse_hparams import dataclass, HParams, Annotated, Flag
 
-
 @dataclass
 class HParamsTest(HParams):
     # This will call: parser.add_argument(type=int, default=0)
@@ -38,36 +37,47 @@ class HParamsTest(HParams):
     # This will call: parser.add_argument(action="store_true", default=False)
     ok: Flag = False
 
+    # when positional is set, the argument is a positional argument
+    pos: Annotated[str, dict(positional=True)] = ""
+
 
 if __name__ == "__main__":
     test = HParamsTest()
     test.show()
 ```
 
-
 ```
 $ python example.py
+usage: example.py [-h] [--x int] [--y upper] [--pair int int] [--ok] [--default Path] str
+example.py: error: the following arguments are required: pos
+
+$ python example.py 123
 ┌────────────┐
-│ Arguments  │
+│  HParams   │
 ├────────────┤
 │x: 0        │
 │y: BAD      │
 │pair: (2, 3)│
 │ok: False   │
+│pos: 123    │
 └────────────┘
 
-$ python example.py --default default.yml 
+$ python example.py --default default.yml 123
 ┌────────────┐
-│ Arguments  │
+│  HParams   │
 ├────────────┤
 │x: 0        │
 │y: 1        │
 │pair: [4, 5]│
 │ok: False   │
+│pos: 123    │
 └────────────┘
 
 $ python example.py --help
-usage: example.py [-h] [--x int] [--y upper] [--pair int int] [--ok] [--default Path]
+usage: example.py [-h] [--x int] [--y upper] [--pair int int] [--ok] [--default Path] str
+
+positional arguments:
+  str             pos
 
 optional arguments:
   -h, --help      show this help message and exit

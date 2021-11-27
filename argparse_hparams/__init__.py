@@ -1,5 +1,6 @@
 import sys
 import argparse
+from argparse import MetavarTypeHelpFormatter, ArgumentDefaultsHelpFormatter
 from dataclasses import dataclass, fields
 from pathlib import Path
 
@@ -9,10 +10,7 @@ from .utils import message_box, yaml2argv
 Flag = Annotated[bool, dict(action="store_true", default=False)]
 
 
-class DefaultFormatter(
-    argparse.MetavarTypeHelpFormatter,
-    argparse.ArgumentDefaultsHelpFormatter,
-):
+class DefaultFormatter(MetavarTypeHelpFormatter, ArgumentDefaultsHelpFormatter):
     pass
 
 
@@ -22,16 +20,25 @@ class HParams:
         parser = argparse.ArgumentParser(formatter_class=self.formatter_class)
 
         for field in fields(type(self)):
-            default = getattr(self, field.name)
             annotation = get_annotation(field.type)
+
+            positional = False
+            if "positional" in annotation:
+                positional = annotation["positional"]
+                del annotation["positional"]
+
             kwargs = {
-                "default": default,
+                "default": getattr(self, field.name),
                 "help": field.name,
             }
             if field.type is not Flag:
                 kwargs["type"] = get_parser(field.type)
             kwargs.update(annotation)
-            parser.add_argument(f"--{field.name.replace('_', '-')}", **kwargs)
+
+            parser.add_argument(
+                ("" if positional else "--") + f"{field.name.replace('_', '-')}",
+                **kwargs,
+            )
 
         parser.add_argument(
             "--default",
@@ -56,4 +63,4 @@ class HParams:
 
     def show(self):
         args = [f"{k}: {v}" for k, v in vars(self).items()]
-        print(message_box("Arguments", "\n".join(args)))
+        print(message_box("HParams", "\n".join(args)))

@@ -13,7 +13,7 @@ def message_box(title, content, aligner="<", max_width=70):
 
     out = []
     out.append("┌" + "─" * nb + "┐")
-    out.append(border.format(title.capitalize()))
+    out.append(border.format(title))
     out.append("├" + "─" * nb + "┤")
 
     for line in lines:
