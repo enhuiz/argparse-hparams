@@ -1,3 +1,4 @@
+import json
 from typing import Annotated, Union, Optional, get_args, get_origin
 from collections import defaultdict
 
@@ -32,12 +33,15 @@ def get_parser(t):
 
     parser = None
 
-    # basic types
+    # special handle for basic types
     if t is bool:
         parser = bool_parser
     elif t is type(None):
         parser = none_parser
+    elif t is dict:
+        parser = json.loads
     elif origin is None:
+        # default parser of the basic type is itself
         parser = t
     # composite types
     elif origin is Annotated:
