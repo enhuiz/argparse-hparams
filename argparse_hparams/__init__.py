@@ -61,6 +61,8 @@ class HParams:
     def formatter_class(self):
         return DefaultFormatter
 
-    def show(self):
+    def show(self, sort=False):
         args = [f"{k}: {v}" for k, v in vars(self).items()]
+        if sort:
+            args = sorted(args)
         print(message_box("HParams", "\n".join(args)))
