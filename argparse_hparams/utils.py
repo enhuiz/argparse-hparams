@@ -1,3 +1,4 @@
+import json
 import yaml
 import textwrap
 from itertools import chain
@@ -31,10 +32,6 @@ def load_yaml(path):
         data = "\n".join([l.rstrip() for l in lines])
         data = yaml.load(data, Loader=yaml.FullLoader) or {}
 
-    for key in list(data.keys()):
-        if type(data[key]) is dict:
-            del data[key]
-
     # load the default (i.e. base) yaml of the current yaml
     # a left base will be overwriten by the right base
     if "default" in data:
@@ -53,6 +50,8 @@ def load_yaml(path):
 def to_val(x):
     if isinstance(x, (tuple, list)):
         return list(chain.from_iterable(map(to_val, x)))
+    if isinstance(x, dict):
+        return [json.dumps(x)]
     return [str(x)]
 
 
