@@ -28,6 +28,10 @@ def none_parser(s):
     return None
 
 
+def dict_parser(s):
+    return json.loads(s)
+
+
 def get_parser(t):
     origin = get_origin(t)
 
@@ -39,7 +43,7 @@ def get_parser(t):
     elif t is type(None):
         parser = none_parser
     elif t is dict:
-        parser = json.loads
+        parser = dict_parser
     elif origin is None:
         # default parser of the basic type is itself
         parser = t
