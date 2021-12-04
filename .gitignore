@@ -1,5 +1,5 @@
 __pycache__
 argparse_hparams/version.py
-example.py
 build
 *egg-info
+run_example.sh
