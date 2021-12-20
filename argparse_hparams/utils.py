@@ -2,6 +2,7 @@ import json
 import yaml
 import textwrap
 from itertools import chain
+from pathlib import Path
 
 
 def message_box(title, content, aligner="<", max_width=70):
@@ -25,7 +26,7 @@ def message_box(title, content, aligner="<", max_width=70):
     return "\n".join(out)
 
 
-def load_yaml(path):
+def load_yaml(path: Path):
     with open(path, "r") as f:
         # remove the blank at the end of lines
         lines = f.read().splitlines()
@@ -35,13 +36,15 @@ def load_yaml(path):
     # load the default (i.e. base) yaml of the current yaml
     # a left base will be overwriten by the right base
     if "default" in data:
-        bases = data["default"]
-        if not isinstance(bases, list):
-            bases = [bases]
-        for base in reversed(bases):
-            base = load_yaml(base)
-            base.update(data)
-            data = base
+        base_paths = data["default"]
+        if not isinstance(base_paths, list):
+            base_paths = [base_paths]
+        for base_path in reversed(base_paths):
+            if base_path.startswith("."):
+                base_path = path.parent / base_path
+            base_data = load_yaml(base_path)
+            base_data.update(data)
+            data = base_data
         del data["default"]
 
     return data
@@ -67,7 +70,7 @@ def to_argv(k, v):
 
 
 def yaml2argv(path, ignored=[]):
-    data = load_yaml(path)
+    data = load_yaml(Path(path))
     for key in ignored:
         del data[key]
     argv = chain.from_iterable(to_argv(k, v) for k, v in data.items())
