@@ -26,7 +26,7 @@ def message_box(title, content, aligner="<", max_width=70):
     return "\n".join(out)
 
 
-def load_yaml(path: Path):
+def _load_yaml_recursively(path: Path, base_key):
     with open(path, "r") as f:
         # remove the blank at the end of lines
         lines = f.read().splitlines()
@@ -35,17 +35,35 @@ def load_yaml(path: Path):
 
     # load the default (i.e. base) yaml of the current yaml
     # a left base will be overwriten by the right base
-    if "default" in data:
-        base_paths = data["default"]
+    if base_key in data:
+        base_paths = data[base_key]
         if not isinstance(base_paths, list):
             base_paths = [base_paths]
         for base_path in reversed(base_paths):
             if base_path.startswith("."):
                 base_path = path.parent / base_path
-            base_data = load_yaml(base_path)
+            base_data = _load_yaml_recursively(base_path, base_key)
             base_data.update(data)
             data = base_data
-        del data["default"]
+        del data[base_key]
+
+    return data
+
+
+def load_yaml(path: Path, base_key: str = "default", delete_flag: str = "<del>"):
+    """
+    Load yaml recursively.
+
+    Args:
+        path: the yaml file where to start loading.
+        base_key: where is the base yaml paths stored.
+        delete_flag: if the value equals the delete_flag, delete the entry
+    """
+    data = _load_yaml_recursively(path, base_key)
+
+    for k, v in list(data.items()):
+        if v == delete_flag:
+            del data[k]
 
     return data
 
